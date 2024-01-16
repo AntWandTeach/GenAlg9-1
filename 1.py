@@ -34,9 +34,13 @@ class Game():
             kill=[]
             for i in range(len(WOLF)):
                 for j in range(len(ZAYZI)):
-                    if(WOLF[i].rect.colliderect(ZAYZI[j])):
-                        ZAYZI[j].hp_minus()
-                        WOLF[i].tick_reburn()
+                    if(WOLF[i].kd==50):
+                        WOLF[i].kd=0
+                        if(WOLF[i].rect.colliderect(ZAYZI[j])):
+                            ZAYZI[j].hp_minus()
+                            WOLF[i].tick_reburn()
+                    else:
+                        WOLF[i].kd+=5
 
             for i in range(len(ZAYZI)):
                 if(ZAYZI[i].hp<=0):
@@ -47,6 +51,10 @@ class Game():
             kill=[]          
             for i in range(len(WOLF)):
                 if(WOLF[i].tick_live<=0):
+                    WOLF[i].hp-=1
+                    WOLF[i].tick_reburn()
+            for i in range(len(WOLF)):
+                if(WOLF[i].hp<=0):
                     kill.append(i)
             for i in range(len(kill)):
                 WOLF.pop(kill[i]-i)

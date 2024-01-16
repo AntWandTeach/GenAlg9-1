@@ -13,6 +13,8 @@ class zivotnie():
         self.coordx=float(x)
         self.coordy=float(y)
         self.hp=5
+        self.kd=50
+        
 
     def output(self):
         self.screen.blit(self.image,self.rect)
