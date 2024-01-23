@@ -7,10 +7,10 @@ class Wolf(zivotnie):
         super().__init__(screen, x, y,ugol)
         self.tipe="wolf"
         self.image=pg.image.load("D:/vsc/урока/informatika/wolf.png")     
-        self.tick_live=1000
+        self.tick_live=900
 
     def tick_reburn(self):
-        self.tick_live=1000
+        self.tick_live=900
 
     def tick_little(self):
         self.tick_live-=1

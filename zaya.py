@@ -6,8 +6,8 @@ class Zaya(zivotnie):
     def __init__(self, screen, x, y,ugol):
         super().__init__(screen, x, y,ugol)
         self.tipe="zaya"
-        self.image=pg.image.load("D:/vsc/урока/informatika/zaya.png")
-    
+        self.image=pg.image.load("D:/vsc/урока/informatika/zaya.png")           
+        
     def move(self):
         if(self.ugol==270):
                 self.ugol=90
