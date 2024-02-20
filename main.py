@@ -1,56 +1,60 @@
-from data import Animal, Victims, Peaceful
-from data import WIDTH, HEIGHT, COLORS, FPS
-from data import MAXENEMY, MAXPEACE, MINENEMY, MINPEACE
-import pygame as pg
-import random as r
-from time import sleep
-import typing
-import sys
+import numpy as np
+import pandas as pd
+from typing import List
+from keras.models import Sequential
+from keras.layers import Dense, Input
 
-pg.init()
-clock = pg.time.Clock()
-pg.display.set_caption("Роблокс (не китайский)")
-screen = pg.display.set_mode((WIDTH, HEIGHT))
 
-entities: typing.List[typing.Union[Animal, Victims, Peaceful]] = []
-
-def drawAnimalAt(obj: typing.Union[Animal, Victims, Peaceful], coords: typing.List[int], surface: pg.Surface = screen, 
-                radius: int = 8, color: str = 'WHITE'):
-    obj.moveToX(coords[0])
-    obj.moveToY(coords[1])
-    pg.draw.circle(surface, COLORS[color], obj.getParams()['coords'], radius)
-    
-def inRadius(x: typing.List[int], y: typing.List[int], radius: int) -> bool:
-    if x[0] 
-
-peaceful: typing.List[Peaceful] = []
-victims: typing.List[Victims] = []
-all: typing.List[typing.Union[Peaceful, Victims]] = []
-
-for p in range(r.randint(MINPEACE, MAXPEACE)):
-    pc: Peaceful = Peaceful([r.randint(0, WIDTH), r.randint(0, HEIGHT)])
-    peaceful.append(pc)
-    all.append(pc)
-
-for v in range(r.randint(MINENEMY, MAXENEMY)):
-    vc: Victims = Victims([r.randint(0, WIDTH), r.randint(0, HEIGHT)])
-    victims.append(vc)
-    all.append(vc)
-
-print(all)
-while True:
-    for event in pg.event.get():
-        if event.type == pg.QUIT:
-            pg.quit()
-            sys.exit()
-    screen.fill(COLORS['GROUND'])
-    for item in all:
-        if isinstance(item, Peaceful):
-            drawAnimalAt(item, [r.randint(0, WIDTH), r.randint(0, HEIGHT)])
+def uniqueElems(l: list) -> list:
+    result: list = []
+    for item in l:
+        if result:
+            if item not in result:
+                result.append(item)
         else:
-            drawAnimalAt(item, [r.randint(0, WIDTH), r.randint(0, HEIGHT)], color='GRAY')
-    for peace in peaceful:
-        for enemy in victims:
-            pass
-    pg.display.flip()
-    clock.tick(FPS)
+            result.append(item)
+    return result
+
+
+def timeToSec(time: str) -> int:
+    result: int = 0
+    time_splited = time.split(':')
+    result += int(time_splited[0]) * 3600
+    result += int(time_splited[1]) * 60
+    result += int(time_splited[2])
+    return result
+
+
+df = pd.read_csv('pizza_sales.csv')
+sizes = np.array(df['pizza_size'].tolist()).reshape(len(df['pizza_size'].tolist()), 1)
+size_kinds = uniqueElems(df['pizza_size'].tolist())
+prices: List[float] = df['unit_price'].tolist()
+times = np.array(timeToSec(df['order_time'].tolist())).reshape(len(df['order_time'].tolist()), 1)
+x_train = np.hstack([times, sizes])
+y_train = np.array(prices, dtype='float64').reshape(len(prices), 1) / max(prices)
+sizes_encoding = {
+    el: ind for ind, el in enumerate(size_kinds)
+}
+
+model = Sequential()
+model.add(Input(2))
+model.add(Dense(20, activation='relu'))
+model.add(Dense(1, activation='sigmoid'))
+print(sizes_encoding)
+print(model.summary())
+
+model.compile(loss='mse', metrics=['mse'])
+model.fit(x_train, y_train, epochs=150)
+model.evaluate(x_train)
+
+user_size = input(f'Введите размер пиццы: {", ".join(size_kinds)}\n')
+user_time = input(f'Введите время приготовления пиццы: h:m:s\n')
+user_size_preprocessed = encoding_size[user_size] / max(sizes)
+user_time_preprocessed = timeToSec(user_time) / time_max[0]
+user_tenor = np.array([user_size_preprocessed, user_time_preprocessed]).reshape(1, 2)
+print(user_tenor.shape)
+result_tensor = model.predict(user_tenor)
+result = result_tensor * max(prices)
+print(f'Ваша пицца стоит {result[0, 0]}$\nЗаплатите в течении 1 часа на сбербанк '
+      f'+7 (913) 024-61-55, в противном случае мы продадим ваши долги в '
+      f'коллекторскую компанию')
