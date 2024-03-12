@@ -3,11 +3,25 @@ from keras.layers import Input, Dense, Conv2D, Flatten
 from keras.models import Sequential
 
 
+encode: dict = {}
+decode: dict = {}
+
+with open('AnnaKarenina.txt', 'r', encoding='utf-8') as f:
+    text: str = ''.join(set(f.read()))
+    for symbol in list(text):
+        encode[symbol] = list(text).index(symbol)
+        decode[list(text).index(symbol)] = symbol
+
+print(encode)
+print(decode)
+
+
 def getModel():
     model = Sequential()
     model.add(Input((28, 28, 1)))
-    model.add(Conv2D(filters=32, kernel_size=(4, 4), activation="relu"))
+    model.add(Conv2D(filters=32, kernel_size=(3, 3), activation="relu"))
     model.add(Flatten())
+    model.add(LSTM(units=10, activation="sigmoid"))
     model.add(Dense(units=10, activation="softmax"))
     model.compile(loss="categorical_crossentropy", metrics=["accuracy", "mse"])
     return model
@@ -26,5 +40,12 @@ if __name__ == "__main__":
     model = getModel()
     x, y, xt, yt = prepareData()
     model.fit(x, y, epochs=138, batch_size=32)
-    model.save("mama-savely")
+    model.save("abc")
     model.evaluate(xt, yt)
+
+
+def encodeString(input: str):
+    result: str = ""
+    for symbol in list(input):
+        result.join(encode[symbol])
+    print(result)
